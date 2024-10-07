@@ -136,6 +136,7 @@ def depthFirstSearch(problem: SearchProblem):
 def breadthFirstSearch(problem: SearchProblem):
     """Search the shallowest nodes in the search tree first."""
     "*** YOUR CODE HERE ***"
+    # should have just stored path in fringe?
     print("Start:", problem.getStartState())
     print("Is Start the goal?", problem.isGoalState(problem.getStartState()))
    # print("Start's successors:", problem.getSuccessors(problem.getStartState()))
@@ -187,7 +188,68 @@ def breadthFirstSearch(problem: SearchProblem):
 def uniformCostSearch(problem: SearchProblem):
     """Search the node of least total cost first."""
     "*** YOUR CODE HERE ***"
-    util.raiseNotDefined()
+    # Need to change the code to store all paths
+    print("Start:", problem.getStartState())
+    print("Is Start the goal?", problem.isGoalState(problem.getStartState()))
+    #print("Start's successors:", problem.getSuccessors(problem.getStartState()))
+
+
+    fringe = util.PriorityQueue()
+    closed = []
+    directions = {}
+
+    # push root into fringe
+    fringe.push(problem.getStartState(), 0)
+    closed.append(problem.getStartState())
+    directions[problem.getStartState()] = [[], 0]
+
+    # loop over fringe
+    while fringe.isEmpty() is not True:
+
+
+        # pop out node
+        node = fringe.pop()
+
+        # if node goal
+        if problem.isGoalState(node) == True:
+
+            # return the path
+            return directions[node][0]
+
+        # for child of node
+        for child in problem.getSuccessors(node):
+
+            # if child not in closed
+            if child[0] not in closed:
+
+                # calculate cost
+                cost = directions[node][1] + child[2]
+
+                # calculate path
+                path = directions[node][0].copy()
+                path.append(child[1])
+
+                # add child to fringe and closed and add data to directions
+                fringe.update(child[0], cost)
+                closed.append(child[0])
+                directions[child[0]] = [path, cost]
+
+            # if child in closed
+            else:
+
+                # calculate cost
+                cost = directions[node][1] + child[2]
+                # check if path is cheaper than current path 
+                if cost < directions[child[0]][1]:
+
+                     # calculate path
+                    path = directions[node][0].copy()
+                    path.append(child[1])
+
+                    # update fringe and directions
+                    fringe.update(child[0], cost)
+                    directions[child[0]] = [path, cost]
+
 
 def nullHeuristic(state, problem=None):
     """
