@@ -261,7 +261,78 @@ def nullHeuristic(state, problem=None):
 def aStarSearch(problem: SearchProblem, heuristic=nullHeuristic):
     """Search the node that has the lowest combined cost and heuristic first."""
     "*** YOUR CODE HERE ***"
-    util.raiseNotDefined()
+    """Search the node of least total cost first."""
+    "*** YOUR CODE HERE ***"
+    # Need to change the code to store all paths
+    print("Start:", problem.getStartState())
+    print("Is Start the goal?", problem.isGoalState(problem.getStartState()))
+    #print("Start's successors:", problem.getSuccessors(problem.getStartState()))
+
+
+    fringe = util.PriorityQueue()
+    closed = []
+    directions = {}
+
+    # push root into fringe
+    fringe.push(problem.getStartState(), 0)
+    closed.append(problem.getStartState())
+    directions[problem.getStartState()] = [[], 0, 0]
+
+    # loop over fringe
+    while fringe.isEmpty() is not True:
+
+
+        # pop out node
+        node = fringe.pop()
+
+        # if node goal
+        if problem.isGoalState(node) == True:
+
+            # return the path
+            return directions[node][0]
+
+        # for child of node
+        for child in problem.getSuccessors(node):
+
+            # if child not in closed
+            if child[0] not in closed:
+
+                # calculate cost
+                uniform = directions[node][2] + child[2]
+                greedy = heuristic(child[0], problem)
+
+                cost = uniform + greedy
+                print(child[0], cost)
+
+                # calculate path
+                path = directions[node][0].copy()
+                path.append(child[1])
+
+                # add child to fringe and closed and add data to directions
+                fringe.update(child[0], cost)
+                closed.append(child[0])
+                directions[child[0]] = [path, cost, uniform]
+
+            # if child in closed
+            else:
+
+                # calculate cost
+                uniform = directions[node][2] + child[2]
+                greedy = heuristic(child[0], problem)
+
+                cost = uniform + greedy
+                print(child[0], cost)
+
+                # check if path is cheaper than current path 
+                if cost < directions[child[0]][1]:
+
+                     # calculate path
+                    path = directions[node][0].copy()
+                    path.append(child[1])
+
+                    # update fringe and directions
+                    fringe.update(child[0], cost)
+                    directions[child[0]] = [path, cost, uniform]
 
 
 # Abbreviations
