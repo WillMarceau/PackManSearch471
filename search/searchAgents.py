@@ -281,6 +281,9 @@ class CornersProblem(search.SearchProblem):
         """
         Stores the walls, pacman's starting position and corners.
         """
+        # ask if you can do this
+        self.reached = set()
+        # ask if you can do this
         self.walls = startingGameState.getWalls()
         self.startingPosition = startingGameState.getPacmanPosition()
         top, right = self.walls.height-2, self.walls.width-2
@@ -296,14 +299,25 @@ class CornersProblem(search.SearchProblem):
         space)
         """
         "*** YOUR CODE HERE ***"
-        util.raiseNotDefined()
+        reached = (False, False, False, False)
+
+
+        # is this correct or do you need to return a list of the reached states as well
+        return (self.startingPosition, reached)
 
     def isGoalState(self, state: Any):
         """
         Returns whether this search state is a goal state of the problem.
         """
         "*** YOUR CODE HERE ***"
-        util.raiseNotDefined()
+
+        # do you have to change the state
+
+        _, reached = state
+        if all(reached):
+            return True
+        return False
+        
 
     def getSuccessors(self, state: Any):
         """
@@ -326,6 +340,22 @@ class CornersProblem(search.SearchProblem):
             #   hitsWall = self.walls[nextx][nexty]
 
             "*** YOUR CODE HERE ***"
+            (x,y), reached = state
+            dx, dy = Actions.directionToVector(action)
+            nextx, nexty = int(x + dx), int(y + dy)
+            if not self.walls[nextx][nexty]:
+                nextState = (nextx, nexty)
+                cost = 1
+
+                # where do you put this if you do not change the search algos
+                nextReached = list(reached)
+                if nextState in self.corners:
+                    index = self.corners.index(nextState)
+                    nextReached[index] = True
+
+
+                successors.append( ( (nextState, tuple(nextReached)), action, cost) )
+
 
         self._expanded += 1 # DO NOT CHANGE
         return successors
