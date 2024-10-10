@@ -302,7 +302,7 @@ def aStarSearch(problem: SearchProblem, heuristic=nullHeuristic):
                 greedy = heuristic(child[0], problem)
 
                 cost = uniform + greedy
-                print(child[0], cost)
+                #print(child[0], cost)
 
                 # calculate path
                 path = directions[node][0].copy()
@@ -321,7 +321,7 @@ def aStarSearch(problem: SearchProblem, heuristic=nullHeuristic):
                 greedy = heuristic(child[0], problem)
 
                 cost = uniform + greedy
-                print(child[0], cost)
+                #print(child[0], cost)
 
                 # check if path is cheaper than current path 
                 if cost < directions[child[0]][1]:
