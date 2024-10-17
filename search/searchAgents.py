@@ -501,8 +501,273 @@ def foodHeuristic(state: Tuple[Tuple, List[List]], problem: FoodSearchProblem):
     problem.heuristicInfo['wallCount']
     """
     position, foodGrid = state
+
+    # init food count
+    problem.heuristicInfo['foodCount'] = foodGrid.count()
+
+    if foodGrid.count() == 0:
+        return 0
+    
+    # one food edge case
+    if foodGrid.count() == 1:
+        for i in range(foodGrid.width):
+            for j in range(foodGrid.height):
+                if foodGrid[i][j]:
+                    return abs(position[0] - i) + abs(position[1] - j)
+
+    # init tree, cost and path dictionary
+    tree = []
+    totalCost = 0
+    cost = {}
+    options = []
+
+    # put start node into dictionary and tree
+    tree.append(position)
+    cost[position] = {}
+
+    # init current node
+    currNode = position
+
+    while len(tree) != problem.heuristicInfo['foodCount']:
+        # loop over grid
+        for i in range(foodGrid.width):
+            for j in range(foodGrid.height):
+                # if food
+                if foodGrid[i][j]:
+                    element = (i, j)
+                    # if element not in tree
+                    if element not in tree:
+                    
+                        # put manhattan dist from currNode to element in currNode cost dict
+                        xy2 = (i, j)
+                        sum = abs(currNode[0] - xy2[0]) + abs(currNode[1] - xy2[1])
+                        if currNode not in cost:
+                            cost[currNode] = {}
+
+                        cost[currNode][xy2] = sum
+                        #might not need options
+                        # put element in options to store key for later
+
+        # once all distances are calculated and put into the cost dict
+        # get smallest value and key assossiated with it for all elements in tree
+        lowCost = float('inf')
+        nextKey = None
+
+        # for key in cost dict
+        for key1 in cost:
+
+            # for key2 in cost dict
+            for key2 in cost[key1]:
+
+                # if not in tree
+                if key2 not in tree:
+                    if cost[key1][key2] < lowCost:
+                # if cost is less that current low current low = cost, nextKey = current key2
+                #
+                        lowCost = cost[key1][key2]
+                        nextKey = key2
+                
+
+        # add the value to the total cost and put the key into the tree
+        tree.append(nextKey)
+        totalCost += lowCost
+
+        # set the currNode to the key
+        currNode = nextKey
+
+
+        # should a good estimate of the path?
+                    
+    return totalCost
+    
+
+
+    # best one so far 3/4
+    """
     "*** YOUR CODE HERE ***"
-    return 0
+    if foodGrid.count() == 0:
+        return 0
+    
+    distance = []
+
+    # for each row
+    for i in range(foodGrid.width):
+        # for each col
+        for j in range(foodGrid.height):
+            # if element is food
+            if foodGrid[i][j]:
+                # append euclidean distance from state
+                xy1 = position
+                xy2 = (i, j)
+                sum = abs(xy1[0] - xy2[0]) + abs(xy1[1] - xy2[1])
+                #sum = ( (xy1[0] - xy2[0]) ** 2 + (xy1[1] - xy2[1]) ** 2 ) ** 0.5
+                distance.append(sum)
+
+    distance.sort()
+    return max(distance)
+"""
+
+"""
+
+    if foodGrid.count() == 0:
+        return 0
+    
+    # init path cost
+    pathCost = float('inf')
+
+    # for row in grid
+    for i in range(foodGrid.width):
+        # for col in grid
+        for j in range(foodGrid.height):
+            # if element is food
+            if foodGrid[i][j]:
+                # find path from element to food using bfs
+                cost = mazeDistance(position, (i, j), problem.startingGameState)
+                # if cost < pathcost
+                if cost < pathCost:
+                    # pathcost = cost
+                    pathCost = cost
+    # return pathcost
+    return pathCost
+
+
+    if foodGrid.count() == 0:
+        return 0
+
+
+    closest_food = None
+    closest_distance = float('inf')
+    # for each row
+    for i in range(foodGrid.width):
+        # for each col
+        for j in range(foodGrid.height):
+            # if element is food
+            if foodGrid[i][j]:
+                # append manhattan distance from state
+                xy1 = position
+                xy2 = (i, j)
+                sum = abs(xy1[0] - xy2[0]) + abs(xy1[1] - xy2[1])
+                #sum = ( (xy1[0] - xy2[0]) ** 2 + (xy1[1] - xy2[1]) ** 2 ) ** 0.5
+                if sum < closest_distance:
+                    closest_food = (i, j)
+                    closest_distance = sum
+
+    next_food = None
+    next_distance = float('inf')
+    # if there is another food still left on the board
+    if foodGrid.count() >= 2:
+        # for each row
+        for i in range(foodGrid.width):
+            # for each col
+            for j in range(foodGrid.height):
+                # if element is food
+                if foodGrid[i][j]:
+                    #get euclidean distance from closest food to next food
+                    if (i, j) != closest_food:
+                        xy1 = closest_food
+                        xy2 = (i, j)
+                        sum = abs(xy1[0] - xy2[0]) + abs(xy1[1] - xy2[1])
+                        if sum < next_distance:
+                            next_food = (i, j)
+                            next_distance = sum
+
+    else:
+        next_distance = 0
+
+    final_food = None
+    final_distance = float('inf')
+    # if there is another food still left on the board
+    if foodGrid.count() >= 3:
+        # for each row
+        for i in range(foodGrid.width):
+            # for each col
+            for j in range(foodGrid.height):
+                # if element is food
+                if foodGrid[i][j]:
+                    #get euclidean distance from closest food to next food
+                    if (i, j) != closest_food and (i, j) != next_food:
+                        xy1 = next_food
+                        xy2 = (i, j)
+                        sum = abs(xy1[0] - xy2[0]) + abs(xy1[1] - xy2[1])
+                        if sum < final_distance:
+                            final_food = (i, j)
+                            final_distance = sum
+    else:
+        final_distance = 0
+
+    return closest_distance + next_distance + final_distance
+
+"""
+"""
+    if foodGrid.count() == 0:
+        return 0
+    
+    # init path cost
+    pathCost = float('inf')
+
+    # for row in grid
+    for i in range(foodGrid.width):
+        # for col in grid
+        for j in range(foodGrid.height):
+            # if element is food
+            if foodGrid[i][j]:
+                # find path from element to food using bfs
+                cost = mazeDistance(position, (i, j), problem.startingGameState)
+                # if cost < pathcost
+                if cost < pathCost:
+                    # pathcost = cost
+                    pathCost = cost
+    # return pathcost
+    return pathCost
+
+"""
+
+"""
+    closest_food = None
+    furthest_distance = 0
+    closest_distance = float('inf')
+    # for each row
+    for i in range(foodGrid.width):
+        # for each col
+        for j in range(foodGrid.height):
+            # if element is food
+            if foodGrid[i][j]:
+                # append manhattan distance from state
+                xy1 = position
+                xy2 = (i, j)
+                sum = abs(xy1[0] - xy2[0]) + abs(xy1[1] - xy2[1])
+                #sum = ( (xy1[0] - xy2[0]) ** 2 + (xy1[1] - xy2[1]) ** 2 ) ** 0.5
+                closest_distance = min(closest_distance, sum)
+                furthest_distance = max(furthest_distance, sum)
+
+                #if sum < closest_distance:
+                 #   closest_food = (i, j)
+                  #  closest_distance = sum
+    return closest_distance + furthest_distance
+    """
+
+    # not Good enough
+"""
+    distance = []
+    # for each row
+    for i in range(foodGrid.width):
+        # for each col
+        for j in range(foodGrid.height):
+            # if element is food
+            if foodGrid[i][j]:
+                # append euclidean distance from state
+                xy1 = position
+                xy2 = (i, j)
+                sum = abs(xy1[0] - xy2[0]) + abs(xy1[1] - xy2[1])
+                #sum = ( (xy1[0] - xy2[0]) ** 2 + (xy1[1] - xy2[1]) ** 2 ) ** 0.5
+                distance.append(sum)
+
+    #distance.sort()
+    # return distance
+
+    return max(distance) + (max(distance) - min(distance)) if distance else 0
+
+"""
 
 class ClosestDotSearchAgent(SearchAgent):
     "Search for all food using a sequence of searches"
@@ -533,7 +798,38 @@ class ClosestDotSearchAgent(SearchAgent):
         problem = AnyFoodSearchProblem(gameState)
 
         "*** YOUR CODE HERE ***"
-        util.raiseNotDefined()
+        path = search.bfs(problem)
+        return path
+
+        """
+        lowCost = float('inf')
+        position = None
+        # loop over food grid
+        for i in range(food.width):
+            for j in range(food.height):
+
+                # if food 
+                if food[i][j]:
+                    # find path cost using maze distance?
+                    cost = mazeDistance(startPosition, (i, j), gameState)
+
+                    # if shorter than cost, cost = path cost and position = position
+                    if cost < lowCost:
+                        lowCost = cost
+                        Foodposition = (i, j)
+
+                    prob = PositionSearchProblem(gameState, costFn = lambda x: 1, goal=Foodposition, start=position, warn=True, visualize=True)
+                    path = search.bfs(prob)
+        # when have closest dot
+        # do search algo for path?
+
+        return path
+        # seems terribly inefficent
+
+        """
+
+
+
 
 class AnyFoodSearchProblem(PositionSearchProblem):
     """
@@ -569,7 +865,9 @@ class AnyFoodSearchProblem(PositionSearchProblem):
         x,y = state
 
         "*** YOUR CODE HERE ***"
-        util.raiseNotDefined()
+        if self.food[x][y]:
+            return True
+        return False
 
 def mazeDistance(point1: Tuple[int, int], point2: Tuple[int, int], gameState: pacman.GameState) -> int:
     """
